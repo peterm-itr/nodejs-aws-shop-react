@@ -11,7 +11,8 @@ export function useCart() {
         Authorization: `Basic ${localStorage.getItem("authorization_token")}`,
       },
     });
-    return res.data;
+    // @ts-ignore
+    return res.data.data.cart.items;
   });
 }
 
@@ -30,10 +31,14 @@ export function useInvalidateCart() {
 
 export function useUpsertCart() {
   return useMutation((values: CartItem) =>
-    axios.put<CartItem[]>(`${API_PATHS.cart}/profile/cart`, values, {
-      headers: {
-        Authorization: `Basic ${localStorage.getItem("authorization_token")}`,
-      },
-    })
+    axios.put<CartItem[]>(
+      `${API_PATHS.cart}/profile/cart`,
+      { items: Array.isArray(values) ? values : [values] },
+      {
+        headers: {
+          Authorization: `Basic ${localStorage.getItem("authorization_token")}`,
+        },
+      }
+    )
   );
 }
